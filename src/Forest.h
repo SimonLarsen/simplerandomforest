@@ -16,10 +16,13 @@ public:
   void init(const Rcpp::List &trees);
   arma::uvec predict() const;
   const arma::vec getImportance() const;
+  const double getOOBError() const;
   
   const std::vector<Tree> &getTrees() const { return trees; }
   
 private:
+  void computeOOBError();
+  
   const arma::mat &x;
   const arma::uvec &y;
   const unsigned int num_trees, mtry;
@@ -28,6 +31,7 @@ private:
   const unsigned int num_threads;
   
   std::vector<Tree> trees;
+  double oob_error;
 };
 
 #endif

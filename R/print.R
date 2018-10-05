@@ -12,4 +12,5 @@ print.simplerandomforest <- function(x, ...) {
   cat("mtry:                   ", x$mtry, "\n")
   cat("replace:                ", x$replace, "\n")
   cat("sample.fraction:        ", x$sample.fraction, "\n")
+  cat("OOB error rate:         ", x$oob.error, "\n")
 }

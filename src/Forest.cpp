@@ -26,6 +26,8 @@ void Forest::grow() {
   }
   
   for(std::thread &th : threads) th.join();
+  
+  computeOOBError();
 }
 
 void Forest::init(const Rcpp::List &trees) {
@@ -41,18 +43,40 @@ void Forest::init(const Rcpp::List &trees) {
 
 arma::uvec Forest::predict() const {
   arma::uvec out(x.n_rows);
+  arma::uvec y_levels = arma::unique(y);
+  arma::uvec y_space = arma::linspace<arma::uvec>(0, y_levels.n_elem-1, y_levels.n_elem);
+  
   for(size_t i = 0; i < x.n_rows; ++i) {
-    arma::uvec pred(num_trees);
-    for(size_t j = 0; j < num_trees; ++j) {
-      pred[j] = trees[j].predict(i);
+    arma::uvec counts(y_levels.n_elem, arma::fill::zeros);
+    for(const Tree &tree : trees) {
+      size_t pred = tree.predict(i);
+      counts[pred]++;
     }
-    
-    arma::uword y_max = arma::max(pred);
-    arma::uvec sp = arma::linspace<arma::uvec>(0, y_max, y_max+1);
-    arma::uvec y_hist = arma::hist(pred, sp);
-    out[i] = arma::index_max(y_hist);
+    out[i] = arma::index_max(counts);
   }
   return out;
+}
+
+void Forest::computeOOBError() {
+  arma::uvec y_levels = arma::unique(y);
+  arma::umat counts(x.n_rows, y_levels.n_elem, arma::fill::zeros);
+  arma::uvec y_space = arma::linspace<arma::uvec>(0, y_levels.n_elem-1, y_levels.n_elem);
+  
+  for(const Tree &tree : trees) {
+    const std::vector<size_t> outofbag = tree.getOOBSamples();
+    for(size_t i : outofbag) {
+      size_t pred = tree.predict(i);
+      counts(i, pred) += 1;
+    }
+  }
+  
+  int errors = 0;
+  for(size_t i = 0; i < x.n_rows; ++i) {
+    size_t pred = arma::index_max(counts.row(i));
+    if(pred != y(i)) errors++;
+  }
+  
+  oob_error = (double)errors / x.n_rows;
 }
 
 const arma::vec Forest::getImportance() const {
@@ -61,4 +85,8 @@ const arma::vec Forest::getImportance() const {
     imp += tree.getImportance();
   }
   return imp / trees.size();
+}
+
+const double Forest::getOOBError() const {
+  return oob_error;
 }

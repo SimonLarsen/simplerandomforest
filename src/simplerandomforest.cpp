@@ -33,7 +33,8 @@ List simplerandomforestCpp(
   
   List out = List::create(
     Named("trees") = out_trees,
-    Named("importance") = forest.getImportance()
+    Named("importance") = forest.getImportance(),
+    Named("oob.error") = forest.getOOBError()
   );
   
   return out;

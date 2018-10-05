@@ -69,14 +69,20 @@ void Tree::bootstrap() {
     std::shuffle(inbag.begin(), inbag.end(), rand);
     inbag.resize(nsamples);
   }
+  
+  std::sort(inbag.begin(), inbag.end());
+  std::vector<size_t> allsamples(x.n_rows);
+  std::iota(allsamples.begin(), allsamples.end(), 0);
+  outofbag.clear();
+  std::set_difference(allsamples.begin(), allsamples.end(), inbag.begin(), inbag.end(), std::back_inserter(outofbag));
 }
 
 void Tree::splitNode(size_t split_index) {
   // Check if node is pure
-  arma::uword first_response = y[samples[split_index][0]];
+  arma::uword first_response = y(samples[split_index][0]);
   bool pure = true;
   for(size_t smp : samples[split_index]) {
-    if(y[smp] != first_response) {
+    if(y(smp) != first_response) {
       pure = false;
       break;
     }
@@ -117,7 +123,7 @@ void Tree::splitNode(size_t split_index) {
         double sum = 0;
         std::vector<int> counts(y_levels.n_elem, 0);
         for(size_t smp : subtree) {
-          arma::uword value = y[smp];
+          arma::uword value = y(smp);
           counts[value]++;
         }
         for(int count : counts) {
@@ -181,7 +187,7 @@ size_t Tree::createNode() {
 void Tree::addGiniImportance(size_t split_index, size_t var, double decrease) {
   std::vector<int> counts(y_levels.n_elem, 0);
   for(size_t smp : samples[split_index]) {
-    arma::uword value = y[smp];
+    arma::uword value = y(smp);
     counts[value]++;
   }
   double sum = 0;
