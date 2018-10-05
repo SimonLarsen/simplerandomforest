@@ -1,0 +1,13 @@
+Package: simplerandomforest
+Type: Package
+Title: A basic Random Forest implementation
+Version: 0.1.0
+Date: 2018-07-07
+Authors@R: person("Simon Jonas", "Larsen", email="simonhffh@gmail.com", role=c("aut","cre"))
+Description: A basic parallel implementation of the Random Forest algorithm.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 0.12.17)
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.0.1
