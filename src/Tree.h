@@ -1,4 +1,5 @@
 #ifndef SIMPLERANDOMFOREST_TREE_H
+#define SIMPLERANDOMFOREST_TREE_H
 
 #include <RcppArmadillo.h>
 #include <vector>
