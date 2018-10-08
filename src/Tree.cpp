@@ -2,7 +2,6 @@
 #include <cmath>
 #include <algorithm>
 #include <array>
-#include <iterator>
 
 Tree::Tree(
   const arma::mat &x, const arma::uvec &y, unsigned int y_levels,
@@ -71,8 +70,9 @@ void Tree::bootstrap() {
   std::sort(inbag.begin(), inbag.end());
   std::vector<size_t> allsamples(x.n_rows);
   std::iota(allsamples.begin(), allsamples.end(), 0);
-  outofbag.clear();
-  std::set_difference(allsamples.begin(), allsamples.end(), inbag.begin(), inbag.end(), std::back_inserter(outofbag));
+  outofbag.resize(inbag.size());
+  std::vector<size_t>::iterator outofbag_end = std::set_difference(allsamples.begin(), allsamples.end(), inbag.begin(), inbag.end(), outofbag.begin());
+  outofbag.resize(outofbag_end - outofbag.begin());
 }
 
 void Tree::splitNode(size_t split_index) {
@@ -139,15 +139,12 @@ void Tree::splitNode(size_t split_index) {
   }
   
   if(best_decrease <= 0) {
-    arma::uvec y_indices(samples[split_index].size());
-    std::copy(samples[split_index].begin(), samples[split_index].end(), y_indices.begin());
-    
-    arma::uword y_max = arma::max(y(y_indices));
-    arma::uvec sp = arma::linspace<arma::uvec>(0, y_max, y_max+1);
-    arma::uvec y_hist = arma::hist(y(y_indices), sp);
-    arma::uword estimate = y_hist.index_max();
-    
-    split_var[split_index] = estimate;
+    std::vector<size_t> counts(y_levels, 0);
+    for(size_t smp : samples[split_index]) {
+      counts[y(smp)]++;
+    }
+    std::vector<size_t>::iterator max_it = std::max_element(counts.begin(), counts.end());
+    split_var[split_index] = std::distance(counts.begin(), std::max_element(counts.begin(), counts.end()));
     return;
   }
   
