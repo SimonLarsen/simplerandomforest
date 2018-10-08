@@ -7,24 +7,24 @@
 class Forest {
 public:
   Forest(
-    const arma::mat &x, const arma::uvec &y,
+    const arma::mat &x, const arma::uvec &y, unsigned int y_levels,
     unsigned int num_trees, unsigned int mtry,
     bool replace, double sample_fraction,
     unsigned int num_threads
   );
-  void grow();
   void init(const Rcpp::List &trees);
+  void grow();
   arma::uvec predict() const;
-  const arma::vec getImportance() const;
+  const arma::vec getGiniImportance() const;
+  const arma::vec getPermutationImportance() ;
   const double getOOBError() const;
   
   const std::vector<Tree> &getTrees() const { return trees; }
   
 private:
-  void computeOOBError();
-  
   const arma::mat &x;
   const arma::uvec &y;
+  const unsigned int y_levels;
   const unsigned int num_trees, mtry;
   const bool replace;
   const double sample_fraction;
@@ -32,6 +32,8 @@ private:
   
   std::vector<Tree> trees;
   double oob_error;
+  
+  void computeOOBError();
 };
 
 #endif

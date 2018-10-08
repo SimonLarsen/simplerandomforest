@@ -11,9 +11,10 @@ predict <- function(model, x, num.threads=NULL, ...) UseMethod("predict")
 predict.simplerandomforest <- function(model, x, num.threads=NULL, ...) {
   if(is.null(num.threads)) num.threads <- 0
   
-  out <- predictCpp(model, x, num.threads)
-  pred <- model$levels[out+1]
-  pred <- factor(pred, levels=model$levels)
+  x <- data.matrix(x)
+  
+  out <- predictCpp(model, x, length(model$levels), num.threads)
+  pred <- factor(model$levels[out+1], levels=model$levels)
   
   return(pred)
 }

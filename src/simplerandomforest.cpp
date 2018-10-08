@@ -12,11 +12,13 @@ List simplerandomforestCpp(
     size_t mtry,
     bool replace,
     double sample_fraction,
+    bool permutation_importance,
     size_t num_threads
 ) {
   if(num_threads == 0) num_threads = std::thread::hardware_concurrency();
   
-  Forest forest(x, y, num_trees, mtry, replace, sample_fraction, num_threads);
+  arma::uvec y_levels = arma::unique(y);
+  Forest forest(x, y, y_levels.n_elem, num_trees, mtry, replace, sample_fraction, num_threads);
   forest.grow();
   
   List out_trees;
@@ -33,9 +35,10 @@ List simplerandomforestCpp(
   
   List out = List::create(
     Named("trees") = out_trees,
-    Named("importance") = forest.getImportance(),
+    Named("gini.importance") = forest.getGiniImportance(),
     Named("oob.error") = forest.getOOBError()
   );
+  if(permutation_importance) out["permutation.importance"] = forest.getPermutationImportance();
   
   return out;
 }

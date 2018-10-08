@@ -24,8 +24,6 @@ simplerandomforest(x, y, num.trees = 500, mtry = NULL, replace = FALSE,
 \item{sample.fraction}{Fraction of observations to sample.}
 
 \item{num.threads}{Number of threads to use. Default is number of cores available.}
-
-\item{dist}{Distance function. One of "cor", "euclidean", "dtw".}
 }
 \description{
 Graph-guided Random Forest.
