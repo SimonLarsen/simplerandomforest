@@ -16,9 +16,9 @@ public:
   void init(const Rcpp::List &trees);
   void grow();
   arma::uvec predict() const;
-  const arma::vec getGiniImportance() const;
-  const arma::vec getPermutationImportance() ;
-  const double getOOBError() const;
+  arma::vec getGiniImportance() const;
+  arma::vec getPermutationImportance();
+  double getOOBError() const;
   
   const std::vector<Tree> &getTrees() const { return trees; }
   

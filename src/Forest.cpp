@@ -80,7 +80,7 @@ void Forest::computeOOBError() {
   oob_error = (double)errors / x.n_rows;
 }
 
-const arma::vec Forest::getGiniImportance() const {
+arma::vec Forest::getGiniImportance() const {
   arma::vec imp(x.n_cols, arma::fill::zeros);
   for(const Tree &tree : trees) {
     imp += tree.getGiniImportance();
@@ -88,7 +88,7 @@ const arma::vec Forest::getGiniImportance() const {
   return imp / trees.size();
 }
 
-const arma::vec Forest::getPermutationImportance() {
+arma::vec Forest::getPermutationImportance() {
   arma::vec imp(x.n_cols, arma::fill::zeros);
   for(Tree &tree : trees) {
     imp += tree.computePermutationImportance();
@@ -96,6 +96,6 @@ const arma::vec Forest::getPermutationImportance() {
   return imp / trees.size();
 }
 
-const double Forest::getOOBError() const {
+double Forest::getOOBError() const {
   return oob_error;
 }
