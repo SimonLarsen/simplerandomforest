@@ -10,6 +10,7 @@ Forest::Forest(const arma::mat &x, const arma::uvec &y, unsigned int y_levels, u
   std::random_device rd;
   std::seed_seq seq{rd()};
   std::vector<std::uint32_t> seeds(num_trees);
+  seq.generate(seeds.begin(), seeds.end());
   for(size_t i = 0; i < num_trees; ++i) {
     trees.emplace_back(x, y, y_levels, mtry, replace, sample_fraction, seeds[i]);
   }
