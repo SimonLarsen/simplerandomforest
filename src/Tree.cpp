@@ -102,33 +102,23 @@ void Tree::splitNode(size_t split_index) {
   double best_decrease = -1;
   
   // Evaluate candidate values and split 
+  arma::mat assign(2, y_levels);
   for(size_t var : candidate_vars) {
     arma::vec values = arma::unique(x.col(var));
     for(double value : values) {
-      std::array<std::vector<size_t>,2> assign;
+      assign.fill(0);
       for(size_t smp : samples[split_index]) {
         if(x(smp, var) < value) {
-          assign[0].push_back(smp);
+          assign(0, y(smp))++;
         } else {
-          assign[1].push_back(smp);
+          assign(1, y(smp))++;
         }
       }
       
-      if(assign[0].size() == 0 || assign[1].size() == 0) continue;
+      if(arma::sum(assign.row(0)) == 0 || arma::sum(assign.row(1)) == 0) continue;
       
-      double decrease = 0;
-      for(const std::vector<size_t> &subtree : assign) {
-        double sum = 0;
-        std::vector<int> counts(y_levels, 0);
-        for(size_t smp : subtree) {
-          arma::uword value = y(smp);
-          counts[value]++;
-        }
-        for(int count : counts) {
-          sum += count * count;
-        }
-        decrease += sum / (double)subtree.size();
-      }
+      arma::vec rs = arma::sum(assign, 1);
+      double decrease = arma::sum(arma::sum(arma::square(assign), 1) / rs);
       
       if(decrease > best_decrease) {
         best_decrease = decrease;
