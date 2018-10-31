@@ -5,10 +5,11 @@
 \alias{simplerandomforest}
 \alias{simplerandomforest}
 \alias{simplerandomforest-package}
-\title{Graph-guided Random Forest.}
+\title{A basic Random Forest implementation.}
 \usage{
 simplerandomforest(x, y, num.trees = 500, mtry = NULL, replace = FALSE,
-  sample.fraction = ifelse(replace, 1, 0.632), num.threads = NULL)
+  sample.fraction = ifelse(replace, 1, 0.632),
+  permutation.importance = FALSE, num.threads = NULL)
 }
 \arguments{
 \item{x}{Training data.}

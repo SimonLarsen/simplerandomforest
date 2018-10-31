@@ -77,10 +77,10 @@ void Tree::bootstrap() {
 
 void Tree::splitNode(size_t split_index) {
   // Check if node is pure
-  arma::uword first_response = y(samples[split_index][0]);
+  arma::uword first_response = y[samples[split_index][0]];
   bool pure = true;
   for(size_t smp : samples[split_index]) {
-    if(y(smp) != first_response) {
+    if(y[smp] != first_response) {
       pure = false;
       break;
     }
@@ -104,14 +104,14 @@ void Tree::splitNode(size_t split_index) {
   // Evaluate candidate values and split 
   arma::mat assign(2, y_levels);
   for(size_t var : candidate_vars) {
-    arma::vec values = arma::unique(x.col(var));
-    for(double value : values) {
+    //arma::vec values = arma::unique(x.col(var));
+    for(double value : x.col(var)) {
       assign.fill(0);
       for(size_t smp : samples[split_index]) {
-        if(x(smp, var) < value) {
-          assign(0, y(smp))++;
+        if(x.at(smp, var) < value) {
+          assign.at(0, y[smp])++;
         } else {
-          assign(1, y(smp))++;
+          assign.at(1, y[smp])++;
         }
       }
       
@@ -131,7 +131,7 @@ void Tree::splitNode(size_t split_index) {
   if(best_decrease <= 0) {
     std::vector<size_t> counts(y_levels, 0);
     for(size_t smp : samples[split_index]) {
-      counts[y(smp)]++;
+      counts[y[smp]]++;
     }
     std::vector<size_t>::iterator max_it = std::max_element(counts.begin(), counts.end());
     split_var[split_index] = std::distance(counts.begin(), std::max_element(counts.begin(), counts.end()));
@@ -147,7 +147,7 @@ void Tree::splitNode(size_t split_index) {
   split_child_right[split_index] = right_index;
   
   for(size_t smp : samples[split_index]) {
-    if(x(smp, best_var) < best_value) {
+    if(x.at(smp, best_var) < best_value) {
       samples[left_index].push_back(smp);
     } else {
       samples[right_index].push_back(smp);
