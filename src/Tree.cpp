@@ -190,7 +190,7 @@ double Tree::computeOOBError() const {
     size_t pred = predict(smp);
     if(pred != y(smp)) errors++;
   }
-  return (double)errors / y.n_elem;
+  return (double)errors / outofbag.size();
 }
 
 arma::vec Tree::computePermutationImportance() {
