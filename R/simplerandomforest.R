@@ -1,4 +1,4 @@
-#' Graph-guided Random Forest.
+#' A basic Random Forest implementation.
 #' 
 #' @param x Training data.
 #' @param y Reponse variables.

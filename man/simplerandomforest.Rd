@@ -23,10 +23,12 @@ simplerandomforest(x, y, num.trees = 500, mtry = NULL, replace = FALSE,
 
 \item{sample.fraction}{Fraction of observations to sample.}
 
+\item{permutation.importance}{Compute permutation importance.}
+
 \item{num.threads}{Number of threads to use. Default is number of cores available.}
 }
 \description{
-Graph-guided Random Forest.
+A basic Random Forest implementation.
 
 simplerandomforest
 }
