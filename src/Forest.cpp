@@ -85,15 +85,25 @@ arma::vec Forest::getGiniImportance() const {
   for(const Tree &tree : trees) {
     imp += tree.getGiniImportance();
   }
-  return imp / trees.size();
+  return imp / num_trees;
 }
 
 arma::vec Forest::getPermutationImportance() {
-  arma::vec imp(x.n_cols, arma::fill::zeros);
-  for(Tree &tree : trees) {
-    imp += tree.computePermutationImportance();
+  std::vector<arma::vec> imps(num_threads, arma::vec(x.n_cols, arma::fill::zeros));
+  std::vector<std::thread> threads;
+  for(size_t tid = 0; tid < std::min(num_threads, num_trees); ++tid) {
+    threads.push_back(std::thread([&](size_t offset) {
+      for(size_t i = offset; i < num_trees; i += num_threads) {
+        imps[offset] += trees[i].computePermutationImportance();
+      }
+    }, tid));
   }
-  return imp / trees.size();
+  for(std::thread &th : threads) th.join();
+  
+  arma::vec imp(x.n_cols, arma::fill::zeros);
+  for(arma::vec &i : imps) imp += i;
+  
+  return imp / num_trees;
 }
 
 double Forest::getOOBError() const {

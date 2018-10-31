@@ -44,7 +44,7 @@ arma::uword Tree::predict(size_t smp) const {
     if(split_child_left[node] == 0) {
       return split_var[node];
     } else {
-      if(x(smp, split_var[node]) < split_value[node]) {
+      if(x.at(smp, split_var[node]) < split_value[node]) {
         node = split_child_left[node];
       } else {
         node = split_child_right[node];
@@ -172,7 +172,7 @@ size_t Tree::createNode() {
 void Tree::addGiniImportance(size_t split_index, size_t var, double decrease) {
   std::vector<int> counts(y_levels, 0);
   for(size_t smp : samples[split_index]) {
-    arma::uword value = y(smp);
+    arma::uword value = y[smp];
     counts[value]++;
   }
   double sum = 0;
@@ -188,7 +188,7 @@ double Tree::computeOOBError() const {
   int errors = 0;
   for(size_t smp : outofbag) {
     size_t pred = predict(smp);
-    if(pred != y(smp)) errors++;
+    if(pred != y[smp]) errors++;
   }
   return (double)errors / outofbag.size();
 }
@@ -204,7 +204,7 @@ arma::vec Tree::computePermutationImportance() {
     int errors = 0;
     for(size_t i = 0; i < outofbag.size(); ++i) {
       size_t pred = predictPermuted(outofbag[i], permutation[i], var);
-      if(pred != y(outofbag[i])) errors++;
+      if(pred != y[outofbag[i]]) errors++;
     }
     
     permutation_importance[var] = (double)errors / y.n_elem - base_error;
@@ -221,9 +221,9 @@ arma::uword Tree::predictPermuted(size_t smp, size_t smp_permuted, size_t var) {
     } else {
       double value;
       if(split_var[node] == var) {
-        value = x(smp_permuted, split_var[node]);
+        value = x.at(smp_permuted, split_var[node]);
       } else {
-        value = x(smp, split_var[node]);
+        value = x.at(smp, split_var[node]);
       }
       
       if(value < split_value[node]) {
