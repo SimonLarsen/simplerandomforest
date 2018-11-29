@@ -27,7 +27,8 @@ void Tree::grow() {
   bootstrap();
   
   createNode();
-  std::copy(inbag.begin(), inbag.end(), std::back_inserter(samples[0]));
+  samples[0].resize(inbag.size());
+  std::copy(inbag.begin(), inbag.end(), samples[0].begin());
   
   gini_importance = arma::vec(x.n_cols, arma::fill::zeros);
 
@@ -104,11 +105,11 @@ void Tree::splitNode(size_t split_index) {
   // Evaluate candidate values and split 
   arma::mat assign(2, y_levels);
   for(size_t var : candidate_vars) {
-    //arma::vec values = arma::unique(x.col(var));
-    for(double value : x.col(var)) {
+    arma::vec values = arma::unique(x.col(var));
+    for(arma::vec::iterator it = values.begin()+1; it != values.end(); ++it) {
       assign.fill(0);
       for(size_t smp : samples[split_index]) {
-        if(x.at(smp, var) < value) {
+        if(x.at(smp, var) < *it) {
           assign.at(0, y[smp])++;
         } else {
           assign.at(1, y[smp])++;
@@ -123,7 +124,7 @@ void Tree::splitNode(size_t split_index) {
       if(decrease > best_decrease) {
         best_decrease = decrease;
         best_var = var;
-        best_value = value;
+        best_value = *it;
       }
     }
   }
