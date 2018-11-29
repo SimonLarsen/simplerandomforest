@@ -207,7 +207,7 @@ arma::vec Tree::computePermutationImportance() {
       if(pred != y[outofbag[i]]) errors++;
     }
     
-    permutation_importance[var] = (double)errors / y.n_elem - base_error;
+    permutation_importance[var] = (double)errors / outofbag.size() - base_error;
   }
   
   return permutation_importance;

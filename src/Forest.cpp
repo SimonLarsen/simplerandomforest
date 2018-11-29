@@ -70,14 +70,16 @@ void Forest::computeOOBError() {
   }
   
   int errors = 0;
+  int predicted = 0;
   for(size_t i = 0; i < x.n_rows; ++i) {
     if(arma::sum(counts.row(i)) > 0) {
       size_t pred = arma::index_max(counts.row(i));
       if(pred != y(i)) errors++;
+      predicted++;
     }
   }
   
-  oob_error = (double)errors / x.n_rows;
+  oob_error = (double)errors / predicted;
 }
 
 arma::vec Forest::getGiniImportance() const {
