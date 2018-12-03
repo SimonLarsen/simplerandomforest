@@ -17,8 +17,8 @@ List simplerandomforestCpp(
 ) {
   if(num_threads == 0) num_threads = std::thread::hardware_concurrency();
   
-  arma::uvec y_levels = arma::unique(y);
-  Forest forest(x, y, y_levels.n_elem, num_trees, mtry, replace, sample_fraction, num_threads);
+  arma::uword y_levels = arma::max(y)+1;
+  Forest forest(x, y, y_levels, num_trees, mtry, replace, sample_fraction, num_threads);
   forest.grow();
   
   List out_trees;
